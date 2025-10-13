@@ -1,5 +1,57 @@
 # ChatBackend
 
+## Tanıtım
+ChatBackend, kayıtlı kullanıcılar arasında 1:1 ve grup mesajlaşması sağlayan bir backend uygulamasıdır. JWT kimlik doğrulama, SignalR tabanlı gerçek zamanlı bildirimler, EF Core ile PostgreSQL veritabanı kullanımını içerir. Mobil ve web istemcileri ile entegre edilebilecek şekilde tasarlandı.
+## Hızlı Başlangıç
+1. Depoyu klonlayın:
+
+```bash
+2. Bağımlılıkları yükleyin:
+
+```bash
+3. `appsettings.json` içindeki `ConnectionStrings:DefaultConnection` değerini Postgres bilgilerinize göre güncelleyin.
+
+4. Migrations uygulama ve çalıştırma:
+```bash
+```bash
+docker compose up --build
+## Proje Yapısı (kısa)
+- `Controllers/` - REST API controller'ları (User, Message, Groups)
+- `Hubs/` - SignalR hub'ı (`ChatHub`)
+## API Özet (kısa)
+Tüm `/api/*` endpoint'leri JWT ile korunmuştur (kayıt ve giriş hariç).
+
+- POST /api/user/register
+- POST /api/user/login
+   - Açıklama: Login, JWT döndürür
+   - Body: { email, password }
+- POST /api/message/receiver/{receiverId}
+   - Açıklama: Belirtilen alıcıya gönderilen mesajları döner
+
+- POST /api/message/send
+- POST /api/groups
+   - Açıklama: Yeni grup oluşturur (oluşturan owner olarak atanır)
+   - Body: { name }
+- POST /api/groups/invite
+   - Açıklama: Gruba kullanıcı davet eder (sadece owner veya global admin)
+   - Body: { groupId, targetUserId }
+- POST /api/groups/respond/{groupId}?accept=true
+   - Açıklama: Daveti kabul/red
+
+- POST /api/groups/cancel/{groupId}
+Detaylı client entegrasyon örnekleri `docs/CLIENT_INTEGRATION.md` içinde bulunmaktadır. Ayrıca `docs/openapi.yaml` ve Postman koleksiyonu `docs/postman_chatbackend_collection.json` mevcuttur.
+
+## SignalR - Özet
+- Hub: `/chathub`
+## Katkıda Bulunma
+- Lütfen feature'lar için ayrı branch açın (`feat/xxx`) ve PR gönderin.
+- Migration veya DB şeması değişiklikleri yapıldığında, migration dosyalarını da eklemeyi unutmayın.
+
+---
+
+Bu README'yi daha da genişletmemi isterseniz (ör. deployment adımları, CI/CD, sample frontend repo linkleri), söyleyin; ekleyeyim.
+# ChatBackend
+
 ## Overview
 ChatBackend is a messaging system backend that provides APIs for managing messages between users. It is designed to work seamlessly with frontend and mobile applications.
 

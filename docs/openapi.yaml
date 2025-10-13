@@ -1,0 +1,113 @@
+openapi: 3.0.1
+info:
+  title: ChatBackend API
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000
+paths:
+  /api/user/register:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                surname:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '201':
+          description: Created
+  /api/user/login:
+    post:
+      summary: Login and get JWT
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: OK
+  /api/message/send:
+    post:
+      summary: Send a message
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sender:
+                  type: string
+                receiver:
+                  type: string
+                content:
+                  type: string
+      responses:
+        '201':
+          description: Created
+  /api/groups:
+    post:
+      summary: Create group
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GroupDto'
+      responses:
+        '201':
+          description: Created
+  /api/groups/invite:
+    post:
+      summary: Invite user to group
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GroupInviteDto'
+      responses:
+        '200':
+          description: OK
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    GroupDto:
+      type: object
+      properties:
+        name:
+          type: string
+    GroupInviteDto:
+      type: object
+      properties:
+        groupId:
+          type: string
+        targetUserId:
+          type: string

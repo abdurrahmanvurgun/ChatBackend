@@ -42,12 +42,12 @@ namespace ChatBackend.Services
         }
 
         // Mesajı ID'sine göre siler. Eğer mesaj bulunamazsa false döner.
-        public async Task<bool> DeleteMessage(int messageId)
+        public async Task<bool> DeleteMessage(Guid messageId)
         {
             _logger.LogInformation("Attempting to delete message with Id: {MessageId}", messageId);
             await LogToDatabaseAsync("Info", $"DeleteMessage requested for MessageId: {messageId}");
 
-            var message = await _context.Messages.FindAsync(messageId);
+            var message = await _context.Messages.FirstOrDefaultAsync(m => m.Id == messageId);
             if (message == null)
             {
                 _logger.LogWarning("Message with Id: {MessageId} not found.", messageId);
@@ -158,14 +158,14 @@ namespace ChatBackend.Services
             };
         }
 
-        Task<IEnumerable<MessageDto>> IMessageService.GetMessages()
+        // Tüm mesajları getirir.
+        public async Task<IEnumerable<MessageDto>> GetMessages()
         {
-             _logger.LogInformation("Fetching all messages synchronously.");
+            _logger.LogInformation("Fetching all messages.");
             try
             {
-                return (Task<IEnumerable<MessageDto>>)_context.Messages
-                    .ToList()
-                    .Select(MapToDto);
+                var messages = await _context.Messages.ToListAsync();
+                return messages.Select(MapToDto);
             }
             catch (Exception ex)
             {

@@ -34,5 +34,8 @@ namespace ChatApp.Backend.Models
         
         [Url(ErrorMessage = "Geçerli bir URL girin.")]
         public string? ProfilePictureUrl { get; set; }
+
+        // Global admin flag
+        public bool IsAdmin { get; set; } = false;
     }
 }

@@ -13,5 +13,7 @@ namespace ChatBackend.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Log> Logs { get; set; }
          public DbSet<MessageLog> MessageLogs { get; set; }
+    public DbSet<Group> Groups { get; set; }
+    public DbSet<GroupMember> GroupMembers { get; set; }
     }
 }

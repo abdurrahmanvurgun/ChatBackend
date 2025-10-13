@@ -24,10 +24,34 @@ ChatBackend is a messaging system backend that provides APIs for managing messag
    ```
    dotnet restore
    ```
-4. Run the application:
+4. Configure PostgreSQL connection in `appsettings.json` (example shown there).
+5. Apply EF Core migrations and run the application:
+   ```bash
+   # create a migration (if you change models)
+   dotnet ef migrations add InitialCreate --project ChatBackend.csproj
+   # apply migrations to the PostgreSQL database
+   dotnet ef database update --project ChatBackend.csproj
+   # run the app
+   dotnet run --project ChatBackend.csproj
    ```
-   dotnet run
-   ```
+
+### Docker helper (PostgreSQL + migrator)
+If you don't want to install PostgreSQL locally, you can use the included Docker Compose that starts PostgreSQL 18 and a temporary .NET SDK container to run migrations:
+
+```bash
+# start db and run migrations (uses defaults from appsettings.json)
+docker compose up --build
+
+# To stop and remove containers
+docker compose down
+```
+
+You can also install the EF Core CLI locally with the helper script:
+
+```bash
+chmod +x scripts/install-ef.sh
+./scripts/install-ef.sh
+```
 
 ## Usage
 - The API provides endpoints for sending, retrieving, and deleting messages.

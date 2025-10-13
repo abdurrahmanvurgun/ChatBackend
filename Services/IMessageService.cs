@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ChatApp.Backend.Models.Dtos;
+using System;
 
 namespace ChatBackend.Services
 {
@@ -13,7 +14,7 @@ namespace ChatBackend.Services
         // Belirtilen alıcıya ait mesajların DTO listesini döner.
         Task<IEnumerable<MessageDto>> GetMessages(string receiver);
         // Mesajı ID'sine göre siler. Başarı durumunu döner.
-        Task<bool> DeleteMessage(int messageId);
+        Task<bool> DeleteMessage(Guid messageId);
         // Tüm mesajların DTO listesini döner.
         Task<IEnumerable<MessageDto>> GetMessages();
     }

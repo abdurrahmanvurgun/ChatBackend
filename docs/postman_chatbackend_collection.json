@@ -1,0 +1,159 @@
+{
+  "info": {
+    "_postman_id": "b1f5c9f4-4a6d-4a0b-9f4d-123456789abc",
+    "name": "ChatBackend - Quick API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Hızlı test koleksiyonu: register/login, messages, groups (invite/respond/history)."
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John\",\n  \"surname\": \"Doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"P@ssw0rd\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/user/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "user",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"P@ssw0rd\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/user/login", "host": ["{{baseUrl}}"], "path": ["api","user","login"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Messages",
+      "item": [
+        {
+          "name": "Get messages for receiver",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/message/receiver/{{receiverId}}", "host": ["{{baseUrl}}"], "path": ["api","message","receiver","{{receiverId}}"] }
+          }
+        },
+        {
+          "name": "Send message",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sender\": \"{{authUserId}}\",\n  \"receiver\": \"<receiver-user-guid>\",\n  \"content\": \"Merhaba!\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/message/send", "host": ["{{baseUrl}}"], "path": ["api","message","send"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Groups",
+      "item": [
+        {
+          "name": "Create group",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" }, { "key":"Authorization","value":"Bearer {{token}}" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"My Group\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/groups", "host": ["{{baseUrl}}"], "path": ["api","groups"] }
+          }
+        },
+        {
+          "name": "Invite user",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" }, { "key":"Authorization","value":"Bearer {{token}}" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"groupId\": \"<group-guid>\",\n  \"targetUserId\": \"<target-user-guid>\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/groups/invite", "host": ["{{baseUrl}}"], "path": ["api","groups","invite"] }
+          }
+        },
+        {
+          "name": "Respond to invite (accept)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key":"Authorization","value":"Bearer {{token}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/groups/respond/{{groupId}}?accept=true", "host": ["{{baseUrl}}"], "path": ["api","groups","respond","{{groupId}}"], "query": [ { "key": "accept", "value": "true" } ] }
+          }
+        },
+        {
+          "name": "Decline invite",
+          "request": {
+            "method": "POST",
+            "header": [ { "key":"Authorization","value":"Bearer {{token}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/groups/decline/{{groupId}}", "host": ["{{baseUrl}}"], "path": ["api","groups","decline","{{groupId}}"] }
+          }
+        },
+        {
+          "name": "Cancel invite (owner)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" }, { "key":"Authorization","value":"Bearer {{token}}" } ],
+            "body": { "mode": "raw", "raw": "\"<target-user-guid>\"" },
+            "url": { "raw": "{{baseUrl}}/api/groups/cancel/{{groupId}}", "host": ["{{baseUrl}}"], "path": ["api","groups","cancel","{{groupId}}"] }
+          }
+        },
+        {
+          "name": "Invite history (received)",
+          "request": {
+            "method": "GET",
+            "header": [ { "key":"Authorization","value":"Bearer {{token}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/groups/history", "host": ["{{baseUrl}}"], "path": ["api","groups","history"] }
+          }
+        },
+        {
+          "name": "Invite history (sentByMe=true)",
+          "request": {
+            "method": "GET",
+            "header": [ { "key":"Authorization","value":"Bearer {{token}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/groups/history?sentByMe=true", "host": ["{{baseUrl}}"], "path": ["api","groups","history"], "query": [ { "key": "sentByMe", "value": "true" } ] }
+          }
+        }
+      ]
+    }
+  ],
+  "event": [],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000" },
+    { "key": "token", "value": "" },
+    { "key": "authUserId", "value": "" },
+    { "key": "receiverId", "value": "" },
+    { "key": "groupId", "value": "" }
+  ]
+}

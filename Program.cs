@@ -79,7 +79,11 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    // AdminOnly policy checks for role claim 'Admin'
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+});
 
 // Swagger yapılandırması
 builder.Services.AddEndpointsApiExplorer();
@@ -108,5 +112,48 @@ app.UseAuthorization();
 app.MapHub<ChatHub>("/chatHub");
 
 app.MapControllers();
+
+// Seed admin user and apply migrations at startup
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var config = services.GetRequiredService<IConfiguration>();
+        var context = services.GetRequiredService<MessagingContext>();
+        // Apply pending migrations (safe if DB already up-to-date)
+        context.Database.Migrate();
+
+        var adminEmail = config.GetValue<string>("Admin:Email") ?? "admin@example.com";
+        var adminPassword = config.GetValue<string>("Admin:Password") ?? "Admin123!";
+        var adminName = config.GetValue<string>("Admin:Name") ?? "Admin";
+        var adminSurname = config.GetValue<string>("Admin:Surname") ?? "User";
+
+        var existing = context.Users.FirstOrDefault(u => u.Email.ToLower() == adminEmail.ToLower());
+        if (existing == null)
+        {
+            var admin = new ChatApp.Backend.Models.User
+            {
+                Name = adminName,
+                Surname = adminSurname,
+                Email = adminEmail,
+                Username = "admin",
+                IsAdmin = true,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            var hasher = new Microsoft.AspNetCore.Identity.PasswordHasher<ChatApp.Backend.Models.User>();
+            admin.PasswordHash = hasher.HashPassword(admin, adminPassword);
+
+            context.Users.Add(admin);
+            context.SaveChanges();
+        }
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetService<ILogger<Program>>();
+        logger?.LogError(ex, "Error while seeding admin user");
+    }
+}
 
 app.Run();
